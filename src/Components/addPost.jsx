@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from 'react-query';
 import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
 const createPost = async (newPost) => {
   const response = await axios.post('https://jsonplaceholder.typicode.com/posts', newPost);
+  console.log(response.data)
   return response.data;
 };
 
@@ -16,26 +17,11 @@ const AddPost = () => {
     userId: 1,
   });
 
-  const { mutate: isLoading, isError, error } = useMutation({
-    mutationFn: AddPost,
-    onSuccess: (data) => {
-      console.log(data);
-    },
-  });
-
-//   const { mutate, isLoading, isError, error, } = useMutation(createPost, {
-//     onSuccess: () => {
-//       console.log('Post created successfully');
-//       setNewPost({ title: '', body: '', userId: 1 });
-//     },
-//     onError: (error) => {
-//       console.error('Error creating post:', error);
-//     },
-//   });
+  const mutation = useMutation(createPost);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    mutate(newPost);
+    mutation.mutate(newPost);
   };
 
   return (
@@ -61,9 +47,10 @@ const AddPost = () => {
               onChange={(event) => setNewPost({ ...newPost, body: event.target.value })}
             />
           </Form.Group>
-          <Button variant="primary" type="submit">
-            Create Post
+          <Button variant="primary" type="submit" disabled={mutation.isLoading}>
+            {mutation.isLoading ? 'Creating...' : 'Create Post'}
           </Button>
+          {mutation.isError && <p style={{ color: 'red' }}>Error: {mutation.error.message}</p>}
         </Form>
       </div>
     </>
@@ -71,4 +58,10 @@ const AddPost = () => {
 };
 
 export default AddPost;
+
+
+
+
+
+
 

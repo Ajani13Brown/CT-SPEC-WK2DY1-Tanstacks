@@ -1,5 +1,5 @@
 import React from 'react'
-import{QueryClient, QueryClientProvider} from '@tanstack/react-query'
+import{QueryClient, QueryClientProvider, useQuery} from 'react-query'
 import GetPost from './Components/GetPost';
 import { Route, Routes } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -16,7 +16,7 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <>
       <AddPost/>
-      {/* <UpdatePost/> */}
+      <UpdatePost/>
       <GetPost/>
       {/* <Routes>
         <Route path="/posts" element={<GetPost/>} />

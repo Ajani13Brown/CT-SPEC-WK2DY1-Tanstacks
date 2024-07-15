@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from 'react-query';
 
 const updateApi = async (updatedPost) => {
   const response = await axios.put(`https://jsonplaceholder.typicode.com/posts/${updatedPost.id}`, updatedPost);
@@ -17,27 +17,21 @@ const UpdatePost = () => {
     userId: 1,
   });
 
-  const { mutate: isLoading, isError, error } = useMutation({
-    mutationFn: updateApi,
+  const { mutate, isLoading, isError, error } = useMutation(updateApi, {
     onSuccess: (data) => {
-      console.log(data);
+      console.log('Post updated successfully:', data);
+      setupdatedPost({ id: '', title: '', body: '', userId: 1 });
     },
   });
 
-//   const handleSubmit = async (event) => {
-//     event.preventDefault();
-//     try {
-//       if (!updatedPost.id) {
-//         alert('Please enter a post ID.');
-//         return;
-//       }
-//       const updatedData = await updateApi(updatedPost);
-//       console.log('Post updated successfully:', updatedData);
-//       setupdatedPost({ id: '', title: '', body: '', userId: 1 });
-//     } catch (error) {
-//       console.error('Error updating post:', error);
-//     }
-//   };
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!updatedPost.id) {
+      alert('Please enter a post ID.');
+      return;
+    }
+    mutate(updatedPost);
+  };
 
   return (
     <>
@@ -71,9 +65,10 @@ const UpdatePost = () => {
               onChange={(event) => setupdatedPost({ ...updatedPost, body: event.target.value })}
             />
           </Form.Group>
-          <Button variant="primary" type="submit">
-            Update Post
+          <Button variant="primary" type="submit" disabled={isLoading}>
+            {isLoading ? 'Updating...' : 'Update Post'}
           </Button>
+          {isError && <p style={{ color: 'red' }}>Error: {error.message}</p>}
         </Form>
       </div>
     </>
@@ -81,4 +76,3 @@ const UpdatePost = () => {
 };
 
 export default UpdatePost;
-
